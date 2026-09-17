@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'maven'
+        jdk 'jdk17'
+    }
+
+    stages {
+
+        stage('Check Out') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/smashersbird/spring-microservices-project-main.git'
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                dir('spring-microservices-project-main') {
+                    sh 'which java'
+                    sh 'which javac'
+                    sh 'java -version'
+                    sh 'javac -version'
+                    sh 'echo $JAVA_HOME'
+                    sh 'mvn -version'
+                    sh 'mvn compile'
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                dir('spring-microservices-project-main') {
+                    sh 'mvn clean package -DskipTests'
+                    sh 'find . -type f -name "*.jar"'
+                }
+            }
+        }
+
+       stage('Build Docker Images') {
+    steps {
+        dir('spring-microservices-project-main') {
+            sh '''
+                docker build -t tmalli834/eureka-server:1.0 ./eureka-server
+                docker build -t tmalli834/config-server:1.0 ./config-server
+                docker build -t tmalli834/user-service:1.0 ./user-service
+                docker build -t tmalli834/api-gateway:1.0 ./api-gateway
+                docker build -t tmalli834/order-service:1.0 ./order-service
+                docker build -t tmalli834/product-service:1.0 ./product-service
+            '''
+        }
+    }
+}
+        stage('List Docker Images') {
+            steps {
+                sh 'docker images'
+            }
+        }
+    }
+}
