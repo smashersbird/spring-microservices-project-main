@@ -14,7 +14,7 @@ spring:
         native:
           # When you run "mvn spring-boot:run" from inside config-server/,
           # user.dir = .../config-server  so  ../config-repo = the config-repo folder.
-          search-locations: file:${user.dir}/../config-repo
+          search-locations: file:/config-repo
 
 eureka:
   client:
