@@ -65,7 +65,7 @@ services:
     image: tmalli834/api-gateway:1.0
     container_name: api-gateway
     ports:
-      - "8080:8080"
+      - "8090:8080"
     depends_on:
       - eureka-server
       - config-server
