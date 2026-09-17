@@ -5,14 +5,28 @@ services:
     container_name: eureka-server
     ports:
       - "8761:8761"
+    networks:
+      - microservices-network
 
   config-server:
     image: tmalli834/config-server:1.0
     container_name: config-server
     ports:
       - "8888:8888"
+    volumes:
+      - ./config-repo:/config-repo
     depends_on:
       - eureka-server
+    networks:
+      - microservices-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - microservices-network
 
   user-service:
     image: tmalli834/user-service:1.0
@@ -22,6 +36,8 @@ services:
     depends_on:
       - eureka-server
       - config-server
+    networks:
+      - microservices-network
 
   order-service:
     image: tmalli834/order-service:1.0
@@ -31,6 +47,8 @@ services:
     depends_on:
       - eureka-server
       - config-server
+    networks:
+      - microservices-network
 
   product-service:
     image: tmalli834/product-service:1.0
@@ -40,6 +58,8 @@ services:
     depends_on:
       - eureka-server
       - config-server
+    networks:
+      - microservices-network
 
   api-gateway:
     image: tmalli834/api-gateway:1.0
@@ -52,3 +72,10 @@ services:
       - user-service
       - order-service
       - product-service
+      - redis
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
